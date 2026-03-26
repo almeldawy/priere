@@ -6,60 +6,73 @@
     <title>Horaires des Prières</title>
     
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#050a10">
+    <meta name="theme-color" content="#000000">
     <link rel="apple-touch-icon" href="icon-192.png">
 
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-deep: #050a10;
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --accent: #e2b05e;
-            --accent-glow: rgba(226, 176, 94, 0.3);
-            --text-main: #ffffff;
-            --text-dim: #94a3b8;
-            --glass-border: rgba(255, 255, 255, 0.1);
+            /* THÈME SOMBRE (Défaut) - Style "Pro/Tech" */
+            --bg-color: #000000;
+            --surface-color: #111111;
+            --surface-hover: #1a1a1a;
+            --border-color: #222222;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --accent-color: #10b981; /* Vert Émeraude */
+            --accent-bg: rgba(16, 185, 129, 0.15);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 10px;
         }
 
         body.light-mode {
-            --bg-deep: #f0f2f5;
-            --card-bg: #ffffff;
-            --text-main: #1a1a1b;
-            --text-dim: #64748b;
-            --glass-border: rgba(0, 0, 0, 0.1);
+            /* THÈME CLAIR - Style "iOS/Minimal" */
+            --bg-color: #f2f2f7;
+            --surface-color: #ffffff;
+            --surface-hover: #f9f9f9;
+            --border-color: #e5e5ea;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --accent-color: #059669; /* Émeraude plus sombre pour contraste */
+            --accent-bg: rgba(5, 150, 105, 0.1);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.08);
         }
 
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
-            padding: 0;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-deep);
-            background-image: 
-                radial-gradient(circle at 0% 0%, rgba(226, 176, 94, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 100% 100%, rgba(76, 201, 240, 0.05) 0%, transparent 50%);
-            color: var(--text-main);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            transition: background-color 0.3s, color 0.3s;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            -webkit-font-smoothing: antialiased;
         }
 
         .app-container {
             width: 100%;
-            max-width: 500px;
-            padding: 2rem 1.5rem;
+            max-width: 460px;
+            padding: 2rem 1.25rem;
         }
 
+        /* --- HEADER --- */
         header {
-            text-align: center;
-            margin-bottom: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 2rem;
             position: relative;
         }
 
@@ -67,136 +80,209 @@
             position: absolute;
             top: 0;
             right: 0;
-            background: var(--card-bg);
-            border: 1px solid var(--glass-border);
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            width: 38px;
+            height: 38px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1rem;
-            transition: transform 0.2s;
+            font-size: 1.1rem;
+            transition: transform 0.2s, background 0.2s;
+            color: var(--text-primary);
         }
 
         .theme-toggle:active {
-            transform: scale(0.9);
+            transform: scale(0.92);
         }
 
         h1 {
             font-weight: 800;
-            font-size: 2.5rem;
-            margin: 0;
-            letter-spacing: -1px;
-            background: linear-gradient(to bottom, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 2rem;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.5rem;
+            padding-right: 40px; /* Espace pour le bouton thème */
         }
 
-        body.light-mode h1 {
-            background: linear-gradient(to bottom, #1a1a1b, #64748b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
+        /* --- BARRE DE RECHERCHE --- */
         .search-area {
             display: flex;
-            background: var(--card-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 5px;
-            margin-top: 1.5rem;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 6px;
+            margin-top: 1rem;
+            box-shadow: var(--shadow-sm);
+            transition: border-color 0.2s;
+        }
+
+        .search-area:focus-within {
+            border-color: var(--accent-color);
         }
 
         input {
             flex: 1;
             background: transparent;
             border: none;
-            padding: 12px 18px;
-            color: var(--text-main);
-            font-size: 1rem;
+            padding: 10px 14px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-weight: 500;
             outline: none;
         }
 
+        input::placeholder {
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
         button.btn-search {
-            background: var(--accent);
+            background: var(--text-primary);
+            color: var(--bg-color);
             border: none;
-            color: #000;
-            padding: 10px 20px;
-            border-radius: 16px;
+            padding: 0 20px;
+            border-radius: var(--radius-sm);
             font-weight: 700;
+            font-size: 0.9rem;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: opacity 0.2s, transform 0.1s;
         }
 
         button.btn-search:active {
-            transform: scale(0.95);
+            transform: scale(0.96);
+            opacity: 0.8;
         }
 
+        #locationDisplay {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* --- ONGLETS (Segmented Control style iOS) --- */
+        .tabs {
+            display: flex;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            padding: 4px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 2rem;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--bg-color);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        /* --- WIDGET PROCHAINE PRIÈRE --- */
         .next-prayer-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
-            border: 1px solid var(--glass-border);
-            border-radius: 30px;
-            padding: 2rem;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 2rem;
             text-align: center;
             margin-bottom: 2rem;
+            box-shadow: var(--shadow-lg);
             position: relative;
             overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
         }
 
-        body.light-mode .next-prayer-card {
-            background: #ffffff;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        /* Ligne de couleur en haut de la carte */
+        .next-prayer-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: var(--accent-color);
         }
 
         .next-prayer-label {
-            color: var(--accent);
+            color: var(--text-secondary);
             text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
-            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            font-weight: 700;
+        }
+
+        .next-prayer-name {
+            font-size: 1.75rem !important;
+            font-weight: 800;
+            margin-top: 8px !important;
+            color: var(--text-primary);
         }
 
         .next-prayer-time {
-            font-size: 3.5rem;
+            font-size: 4.5rem !important;
             font-weight: 800;
             margin: 0.5rem 0;
+            line-height: 1;
+            letter-spacing: -0.04em;
+            color: var(--accent-color);
+            font-variant-numeric: tabular-nums;
         }
 
         .countdown {
-            font-size: 1rem;
-            color: var(--text-dim);
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            background: var(--bg-color);
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            font-variant-numeric: tabular-nums;
         }
 
+        /* --- LISTE DES PRIÈRES --- */
         .prayer-grid {
-            display: grid;
-            gap: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .prayer-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 1.5rem;
-            background: var(--card-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            transition: background 0.3s;
+            padding: 1.25rem 1.5rem;
+            background: var(--surface-color);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease, background 0.2s ease;
         }
 
         .prayer-row.extra {
-            opacity: 0.7;
+            opacity: 0.6;
             background: transparent;
             border-style: dashed;
         }
 
         .prayer-row.active {
-            border-color: var(--accent);
-            background: rgba(226, 176, 94, 0.05);
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            color: #ffffff; /* Force le blanc pour le contraste sur le vert */
+            transform: scale(1.02);
+            box-shadow: var(--shadow-sm);
         }
 
         .prayer-name {
@@ -205,96 +291,96 @@
         }
 
         .prayer-time {
-            font-family: monospace;
+            font-weight: 700;
             font-size: 1.2rem;
-            color: var(--accent);
+            font-variant-numeric: tabular-nums;
         }
 
-        /* --- STYLES CALENDRIER --- */
+        .prayer-row:not(.active) .prayer-time {
+            color: var(--text-secondary);
+        }
+
+        /* --- CALENDRIER --- */
+        #viewMonth {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            box-shadow: var(--shadow-sm);
+        }
+
         .month-header {
             display: flex;
-            padding: 0.5rem 2px;
-            color: var(--accent);
-            font-size: 0.55rem;
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            font-size: 0.65rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            text-align: center;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 8px;
         }
 
         .month-row {
             display: flex;
-            padding: 0.6rem 2px;
-            background: var(--card-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            font-size: 0.7rem;
-            margin-bottom: 4px;
-            text-align: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            font-weight: 500;
+            align-items: center;
         }
 
-        /* Mise en évidence du Vendredi */
+        .month-row:last-child {
+            border-bottom: none;
+        }
+
         .month-row.friday-highlight {
-            border-color: var(--accent);
-            background: rgba(226, 176, 94, 0.15);
+            background: var(--accent-bg);
+            border-radius: 8px;
+            border-bottom: none;
+            margin: 4px 0;
+            padding: 10px 4px; /* Léger décalage pour le background */
         }
 
         .col { 
             flex: 1; 
-            display: flex;
-            justify-content: center;
-            align-items: center; 
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+            color: var(--text-secondary);
         }
 
         .col-date { 
-            width: 22px; 
+            width: 28px; 
             flex: 0 0 auto; 
             text-align: center;
-            font-weight: 800; 
-            color: var(--text-main); 
+            font-weight: 700; 
+            color: var(--text-primary);
         }
 
         .col-day { 
-            width: 25px; 
+            width: 36px; 
             flex: 0 0 auto; 
             text-align: center;
             font-weight: 600; 
-            color: var(--accent);
-            text-transform: capitalize;
-            font-size: 0.65rem;
+            color: var(--accent-color);
+            font-size: 0.7rem;
+            text-transform: uppercase;
         }
 
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 1.5rem;
+        .month-row.friday-highlight .col {
+            color: var(--text-primary);
         }
 
-        .tab-btn {
-            flex: 1;
-            background: var(--card-bg);
-            border: 1px solid var(--glass-border);
-            color: var(--text-dim);
-            padding: 10px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .tab-btn.active {
-            background: var(--text-main);
-            color: var(--bg-deep);
-        }
-
-        .hidden { display: none; }
+        /* --- UTILITAIRES --- */
+        .hidden { display: none !important; }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .animate {
-            animation: fadeIn 0.6s ease forwards;
+            animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
         }
     </style>
 </head>
@@ -304,11 +390,11 @@
     <header>
         <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
         <h1>Horaires des Prières</h1>
+        <p id="locationDisplay">📍 Position en cours...</p>
         <div class="search-area">
-            <input id="cityInput" placeholder="Ville (ex: Paris, Dubai...)" type="text">
+            <input id="cityInput" placeholder="Rechercher une ville..." type="text">
             <button class="btn-search" onclick="searchCity()">Go</button>
         </div>
-        <p id="locationDisplay" style="margin-top: 10px; font-size: 0.8rem; color: var(--text-dim);"></p>
     </header>
 
     <div class="tabs">
@@ -319,7 +405,7 @@
     <div id="viewToday" class="animate">
         <div class="next-prayer-card">
             <div class="next-prayer-label">Prochaine Prière</div>
-            <div id="nextName" class="next-prayer-name" style="font-size: 1.5rem; margin-top: 5px;">Chargement...</div>
+            <div id="nextName" class="next-prayer-name">Chargement...</div>
             <div id="nextTime" class="next-prayer-time">--:--</div>
             <div id="timer" class="countdown">Recherche de votre position...</div>
         </div>
@@ -517,10 +603,9 @@
             const i = day.timings.Isha.split(' ')[0];
 
             const dateObj = new Date(day.date.readable);
-            const dayIndex = dateObj.getDay(); // 0 pour Dimanche, 5 pour Vendredi
+            const dayIndex = dateObj.getDay(); 
             const dayName = daysFr[dayIndex];
 
-            // On ajoute la classe "friday-highlight" si c'est un Vendredi (index 5)
             const isFridayClass = dayIndex === 5 ? "friday-highlight" : "";
 
             html += `
