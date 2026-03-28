@@ -305,8 +305,9 @@
             background: var(--surface-color);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
-            padding: 1rem;
+            padding: 0.75rem;
             box-shadow: var(--shadow-sm);
+            overflow-x: hidden;
         }
 
         .month-header {
@@ -325,7 +326,7 @@
             display: flex;
             padding: 10px 0;
             border-bottom: 1px solid var(--border-color);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 500;
             align-items: center;
         }
@@ -339,32 +340,41 @@
             border-radius: 8px;
             border-bottom: none;
             margin: 4px 0;
-            padding: 10px 4px; /* Léger décalage pour le background */
+            padding: 10px 0; 
         }
 
+        /* Colonnes & Séparateurs */
         .col { 
             flex: 1; 
             text-align: center;
             font-variant-numeric: tabular-nums;
             color: var(--text-secondary);
+            border-right: 1px solid rgba(128, 128, 128, 0.15); /* Séparateur discret */
+            padding: 0 2px;
+        }
+
+        .col:last-child {
+            border-right: none;
         }
 
         .col-date { 
-            width: 28px; 
+            width: 26px; 
             flex: 0 0 auto; 
             text-align: center;
             font-weight: 700; 
             color: var(--text-primary);
+            border-right: 1px solid rgba(128, 128, 128, 0.3); /* Séparateur plus marqué pour la date */
         }
 
         .col-day { 
-            width: 36px; 
+            width: 32px; 
             flex: 0 0 auto; 
             text-align: center;
             font-weight: 600; 
             color: var(--accent-color);
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
+            border-right: 1px solid rgba(128, 128, 128, 0.3);
         }
 
         .month-row.friday-highlight .col {
