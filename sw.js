@@ -1,4 +1,4 @@
-const CACHE_NAME = 'salat-v2'; // On change le nom (v1 -> v2) pour forcer le navigateur à voir du neuf
+const CACHE_NAME = 'salat-v3'; // On change le nom (v1 -> v2) pour forcer le navigateur à voir du neuf
 const ASSETS = [
   './',
   './index.html',
