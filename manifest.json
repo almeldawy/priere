@@ -3,8 +3,8 @@
   "short_name": "Salat",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#050a10",
-  "theme_color": "#e2b05e",
+  "background_color": "#7584f2",
+  "theme_color": "#7584f2",
   "icons": [
     {
       "src": "icon-192.png",
