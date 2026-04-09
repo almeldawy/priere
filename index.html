@@ -1,639 +1,86 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horaires des Prières</title>
-    
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#000000">
-    <link rel="apple-touch-icon" href="icon-192.png">
+<!DOCTYPE html><html lang="fr"><head>    <meta charset="UTF-8">    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>Horaires des Prières</title>        <link rel="manifest" href="manifest.json">    <meta name="theme-color" content="#000000">    <link rel="apple-touch-icon" href="icon-192.png">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">        <style>        :root {            /* THÈME SOMBRE (Défaut) - Style "Pro/Tech" */            --bg-color: #000000;            --surface-color: #111111;            --surface-hover: #1a1a1a;            --border-color: #222222;            --text-primary: #ffffff;            --text-secondary: #888888;            --accent-color: #10b981; /* Vert Émeraude */            --accent-bg: rgba(16, 185, 129, 0.15);            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);            --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);            --radius-lg: 24px;            --radius-md: 16px;            --radius-sm: 10px;        }
+        body.light-mode {            /* THÈME CLAIR - Style "iOS/Minimal" */            --bg-color: #f2f2f7;            --surface-color: #ffffff;            --surface-hover: #f9f9f9;            --border-color: #e5e5ea;            --text-primary: #1d1d1f;            --text-secondary: #86868b;            --accent-color: #059669; /* Émeraude plus sombre pour contraste */            --accent-bg: rgba(5, 150, 105, 0.1);            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.08);        }
+        * {            box-sizing: border-box;            -webkit-tap-highlight-color: transparent;            margin: 0;            padding: 0;        }
+        body {            font-family: 'Plus Jakarta Sans', sans-serif;            background-color: var(--bg-color);            color: var(--text-primary);            min-height: 100vh;            display: flex;            flex-direction: column;            align-items: center;            transition: background-color 0.3s ease, color 0.3s ease;            -webkit-font-smoothing: antialiased;        }
+        .app-container {            width: 100%;            max-width: 460px;            padding: 2rem 1.25rem;        }
+        /* --- HEADER --- */        header {            display: flex;            flex-direction: column;            margin-bottom: 2rem;            position: relative;        }
+        .theme-toggle {            position: absolute;            top: 0;            right: 0;            background: var(--surface-color);            border: 1px solid var(--border-color);            border-radius: 50%;            width: 38px;            height: 38px;            cursor: pointer;            display: flex;            align-items: center;            justify-content: center;            font-size: 1.1rem;            transition: transform 0.2s, background 0.2s;            color: var(--text-primary);        }
+        .theme-toggle:active {            transform: scale(0.92);        }
+        h1 {            font-weight: 800;            font-size: 2rem;            letter-spacing: -0.03em;            margin-bottom: 0.5rem;            padding-right: 40px; /* Espace pour le bouton thème */        }
+        /* --- BARRE DE RECHERCHE --- */        .search-area {            display: flex;            background: var(--surface-color);            border: 1px solid var(--border-color);            border-radius: var(--radius-md);            padding: 6px;            margin-top: 1rem;            box-shadow: var(--shadow-sm);            transition: border-color 0.2s;        }
+        .search-area:focus-within {            border-color: var(--accent-color);        }
+        input {            flex: 1;            background: transparent;            border: none;            padding: 10px 14px;            color: var(--text-primary);            font-size: 0.95rem;            font-weight: 500;            outline: none;        }
+        input::placeholder {            color: var(--text-secondary);            font-weight: 400;        }
+        button.btn-search {            background: var(--text-primary);            color: var(--bg-color);            border: none;            padding: 0 20px;            border-radius: var(--radius-sm);            font-weight: 700;            font-size: 0.9rem;            cursor: pointer;            transition: opacity 0.2s, transform 0.1s;        }
+        button.btn-search:active {            transform: scale(0.96);            opacity: 0.8;        }
+        #locationDisplay {            margin-top: 12px;            font-size: 0.85rem;            font-weight: 600;            color: var(--text-secondary);            display: flex;            align-items: center;            gap: 6px;        }
+        /* --- ONGLETS (Segmented Control style iOS) --- */        .tabs {            display: flex;            background: var(--surface-color);            border: 1px solid var(--border-color);            padding: 4px;            border-radius: var(--radius-sm);            margin-bottom: 2rem;        }
+        .tab-btn {            flex: 1;            background: transparent;            border: none;            color: var(--text-secondary);            padding: 10px;            border-radius: 8px;            cursor: pointer;            font-weight: 600;            font-size: 0.9rem;            transition: all 0.2s ease;        }
+        .tab-btn.active {            background: var(--bg-color);            color: var(--text-primary);            box-shadow: var(--shadow-sm);            border: 1px solid var(--border-color);        }
+        /* --- WIDGET PROCHAINE PRIÈRE --- */        .next-prayer-card {            background: var(--surface-color);            border: 1px solid var(--border-color);            border-radius: var(--radius-lg);            padding: 2.5rem 2rem;            text-align: center;            margin-bottom: 2rem;            box-shadow: var(--shadow-lg);            position: relative;            overflow: hidden;        }
+        /* Ligne de couleur en haut de la carte */        .next-prayer-card::before {            content: '';            position: absolute;            top: 0; left: 0; right: 0; height: 4px;            background: var(--accent-color);        }
+        .next-prayer-label {            color: var(--text-secondary);            text-transform: uppercase;            font-size: 0.75rem;            letter-spacing: 0.1em;            font-weight: 700;        }
+        .next-prayer-name {            font-size: 1.75rem !important;            font-weight: 800;            margin-top: 8px !important;            color: var(--text-primary);        }
+        .next-prayer-time {            font-size: 4.5rem !important;            font-weight: 800;            margin: 0.5rem 0;            line-height: 1;            letter-spacing: -0.04em;            color: var(--accent-color);            font-variant-numeric: tabular-nums;        }
+        .countdown {            font-size: 0.95rem;            color: var(--text-secondary);            font-weight: 500;            background: var(--bg-color);            display: inline-block;            padding: 8px 16px;            border-radius: 20px;            border: 1px solid var(--border-color);            font-variant-numeric: tabular-nums;        }
+        /* --- LISTE DES PRIÈRES --- */        .prayer-grid {            display: flex;            flex-direction: column;            gap: 8px;        }
+        .prayer-row {            display: flex;            justify-content: space-between;            align-items: center;            padding: 1.25rem 1.5rem;            background: var(--surface-color);            border-radius: var(--radius-md);            border: 1px solid var(--border-color);            transition: transform 0.2s ease, background 0.2s ease;        }
+        .prayer-row.extra {            opacity: 0.6;            background: transparent;            border-style: dashed;        }
+        .prayer-row.active {            background: var(--accent-color);            border-color: var(--accent-color);            color: #ffffff; /* Force le blanc pour le contraste sur le vert */            transform: scale(1.02);            box-shadow: var(--shadow-sm);        }
+        .prayer-name {            font-weight: 600;            font-size: 1.1rem;        }
+        .prayer-time {            font-weight: 700;            font-size: 1.2rem;            font-variant-numeric: tabular-nums;        }
+        .prayer-row:not(.active) .prayer-time {            color: var(--text-secondary);        }
+        /* --- CALENDRIER --- */        #viewMonth {            background: var(--surface-color);            border: 1px solid var(--border-color);            border-radius: var(--radius-md);            padding: 0.75rem;            box-shadow: var(--shadow-sm);            overflow-x: hidden;        }
+        .month-header {            display: flex;            padding: 0.5rem 0;            color: var(--text-secondary);            font-size: 0.65rem;            font-weight: 700;            text-transform: uppercase;            letter-spacing: 0.05em;            border-bottom: 1px solid var(--border-color);            margin-bottom: 8px;        }
+        .month-row {            display: flex;            padding: 10px 0;            border-bottom: 1px solid var(--border-color);            font-size: 0.75rem;            font-weight: 500;            align-items: center;        }
+        .month-row:last-child {            border-bottom: none;        }
+        .month-row.friday-highlight {            background: var(--accent-bg);            border-radius: 8px;            border-bottom: none;            margin: 4px 0;            padding: 10px 0;         }
+        /* Colonnes & Séparateurs */        .col {             flex: 1;             text-align: center;            font-variant-numeric: tabular-nums;            color: var(--text-secondary);            border-right: 1px solid rgba(128, 128, 128, 0.15); /* Séparateur discret */            padding: 0 2px;        }
+        .col:last-child {            border-right: none;        }
+        .col-date {             width: 26px;             flex: 0 0 auto;             text-align: center;            font-weight: 700;             color: var(--text-primary);            border-right: 1px solid rgba(128, 128, 128, 0.3); /* Séparateur plus marqué pour la date */        }
+        .col-day {             width: 32px;             flex: 0 0 auto;             text-align: center;            font-weight: 600;             color: var(--accent-color);            font-size: 0.65rem;            text-transform: uppercase;            border-right: 1px solid rgba(128, 128, 128, 0.3);        }
+        .month-row.friday-highlight .col {            color: var(--text-primary);        }
+        /* --- UTILITAIRES --- */        .hidden { display: none !important; }
+        @keyframes fadeIn {            from { opacity: 0; transform: translateY(8px); }            to { opacity: 1; transform: translateY(0); }        }
+        .animate {            animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;        }    </style></head><body>
+<div class="app-container">    <header>        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>        <h1>Horaires des Prières</h1>        <p id="locationDisplay">📍 Position en cours...</p>        <div class="search-area">            <input id="cityInput" placeholder="Rechercher une ville..." type="text">            <button class="btn-search" onclick="searchCity()">Go</button>        </div>    </header>
+    <div class="tabs">        <button id="btnToday" class="tab-btn active" onclick="switchTab('today')">Aujourd'hui</button>        <button id="btnMonth" class="tab-btn" onclick="switchTab('month')">Calendrier</button>    </div>
+    <div id="viewToday" class="animate">        <div class="next-prayer-card">            <div class="next-prayer-label">Prochaine Prière</div>            <div id="nextName" class="next-prayer-name">Chargement...</div>            <div id="nextTime" class="next-prayer-time">--:--</div>            <div id="timer" class="countdown">Recherche de votre position...</div>        </div>
+        <div class="prayer-grid" id="prayerList"></div>    </div>
+    <div id="viewMonth" class="hidden animate">        <div class="month-header">            <div class="col-date">#</div>            <div class="col-day">J</div>            <div class="col">Fajr</div>            <div class="col">Cho</div>            <div class="col">Dhu</div>            <div class="col">Asr</div>            <div class="col">Mag</div>            <div class="col">Ish</div>        </div>        <div id="monthTable"></div>    </div></div>
+<script>    if ('serviceWorker' in navigator) {        window.addEventListener('load', () => {            navigator.serviceWorker.register('sw.js')                .then(reg => console.log('SW prêt'))                .catch(err => console.log('Erreur SW', err));        });    }
+    let lat, lon;    const method = 3;     let currentPrayers = [];    let timerInterval = null;
+    function toggleTheme() {        const body = document.body;        const btn = document.getElementById('themeToggle');        body.classList.toggle('light-mode');        const isLight = body.classList.contains('light-mode');        btn.innerText = isLight ? "☀️" : "🌙";        localStorage.setItem('theme', isLight ? 'light' : 'dark');    }
+    function applySavedTheme() {        const savedTheme = localStorage.getItem('theme');        if (savedTheme === 'light') {            document.body.classList.add('light-mode');            document.getElementById('themeToggle').innerText = "☀️";        }    }
+    window.onload = () => {        applySavedTheme();        if (navigator.geolocation) {            navigator.geolocation.getCurrentPosition(pos => {                lat = pos.coords.latitude;                lon = pos.coords.longitude;                updateLocationText("Ma position actuelle");                loadData();            }, () => {                lat = 48.8566; lon = 2.3522;                 updateLocationText("Paris (Défaut)");                loadData();            });        }    };
+    function updateLocationText(text) {        document.getElementById('locationDisplay').innerText = "📍 " + text;    }
+    async function searchCity() {        const city = document.getElementById('cityInput').value;        if(!city) return;        try {            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${city}`);            const data = await response.json();            if(data.length > 0) {                lat = data[0].lat;                lon = data[0].lon;                updateLocationText(data[0].display_name);                loadData();            }        } catch (e) {            console.error("Erreur recherche ville");        }    }
+    function switchTab(view) {        if(view === 'today') {            document.getElementById('viewToday').classList.remove('hidden');            document.getElementById('viewMonth').classList.add('hidden');            document.getElementById('btnToday').classList.add('active');            document.getElementById('btnMonth').classList.remove('active');        } else {            document.getElementById('viewToday').classList.add('hidden');            document.getElementById('viewMonth').classList.remove('hidden');            document.getElementById('btnToday').classList.remove('active');            document.getElementById('btnMonth').classList.add('active');        }    }
 
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            /* THÈME SOMBRE (Défaut) - Style "Pro/Tech" */
-            --bg-color: #000000;
-            --surface-color: #111111;
-            --surface-hover: #1a1a1a;
-            --border-color: #222222;
-            --text-primary: #ffffff;
-            --text-secondary: #888888;
-            --accent-color: #10b981; /* Vert Émeraude */
-            --accent-bg: rgba(16, 185, 129, 0.15);
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
-            --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
-            --radius-lg: 24px;
-            --radius-md: 16px;
-            --radius-sm: 10px;
-        }
-
-        body.light-mode {
-            /* THÈME CLAIR - Style "iOS/Minimal" */
-            --bg-color: #f2f2f7;
-            --surface-color: #ffffff;
-            --surface-hover: #f9f9f9;
-            --border-color: #e5e5ea;
-            --text-primary: #1d1d1f;
-            --text-secondary: #86868b;
-            --accent-color: #059669; /* Émeraude plus sombre pour contraste */
-            --accent-bg: rgba(5, 150, 105, 0.1);
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.08);
-        }
-
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 460px;
-            padding: 2rem 1.25rem;
-        }
-
-        /* --- HEADER --- */
-        header {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 2rem;
-            position: relative;
-        }
-
-        .theme-toggle {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 50%;
-            width: 38px;
-            height: 38px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
-            transition: transform 0.2s, background 0.2s;
-            color: var(--text-primary);
-        }
-
-        .theme-toggle:active {
-            transform: scale(0.92);
-        }
-
-        h1 {
-            font-weight: 800;
-            font-size: 2rem;
-            letter-spacing: -0.03em;
-            margin-bottom: 0.5rem;
-            padding-right: 40px; /* Espace pour le bouton thème */
-        }
-
-        /* --- BARRE DE RECHERCHE --- */
-        .search-area {
-            display: flex;
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 6px;
-            margin-top: 1rem;
-            box-shadow: var(--shadow-sm);
-            transition: border-color 0.2s;
-        }
-
-        .search-area:focus-within {
-            border-color: var(--accent-color);
-        }
-
-        input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            padding: 10px 14px;
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            font-weight: 500;
-            outline: none;
-        }
-
-        input::placeholder {
-            color: var(--text-secondary);
-            font-weight: 400;
-        }
-
-        button.btn-search {
-            background: var(--text-primary);
-            color: var(--bg-color);
-            border: none;
-            padding: 0 20px;
-            border-radius: var(--radius-sm);
-            font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: opacity 0.2s, transform 0.1s;
-        }
-
-        button.btn-search:active {
-            transform: scale(0.96);
-            opacity: 0.8;
-        }
-
-        #locationDisplay {
-            margin-top: 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* --- ONGLETS (Segmented Control style iOS) --- */
-        .tabs {
-            display: flex;
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            padding: 4px;
-            border-radius: var(--radius-sm);
-            margin-bottom: 2rem;
-        }
-
-        .tab-btn {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-        }
-
-        .tab-btn.active {
-            background: var(--bg-color);
-            color: var(--text-primary);
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-color);
-        }
-
-        /* --- WIDGET PROCHAINE PRIÈRE --- */
-        .next-prayer-card {
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 2.5rem 2rem;
-            text-align: center;
-            margin-bottom: 2rem;
-            box-shadow: var(--shadow-lg);
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Ligne de couleur en haut de la carte */
-        .next-prayer-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 4px;
-            background: var(--accent-color);
-        }
-
-        .next-prayer-label {
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.1em;
-            font-weight: 700;
-        }
-
-        .next-prayer-name {
-            font-size: 1.75rem !important;
-            font-weight: 800;
-            margin-top: 8px !important;
-            color: var(--text-primary);
-        }
-
-        .next-prayer-time {
-            font-size: 4.5rem !important;
-            font-weight: 800;
-            margin: 0.5rem 0;
-            line-height: 1;
-            letter-spacing: -0.04em;
-            color: var(--accent-color);
-            font-variant-numeric: tabular-nums;
-        }
-
-        .countdown {
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-            background: var(--bg-color);
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 20px;
-            border: 1px solid var(--border-color);
-            font-variant-numeric: tabular-nums;
-        }
-
-        /* --- LISTE DES PRIÈRES --- */
-        .prayer-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .prayer-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.25rem 1.5rem;
-            background: var(--surface-color);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-color);
-            transition: transform 0.2s ease, background 0.2s ease;
-        }
-
-        .prayer-row.extra {
-            opacity: 0.6;
-            background: transparent;
-            border-style: dashed;
-        }
-
-        .prayer-row.active {
-            background: var(--accent-color);
-            border-color: var(--accent-color);
-            color: #ffffff; /* Force le blanc pour le contraste sur le vert */
-            transform: scale(1.02);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .prayer-name {
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .prayer-time {
-            font-weight: 700;
-            font-size: 1.2rem;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .prayer-row:not(.active) .prayer-time {
-            color: var(--text-secondary);
-        }
-
-        /* --- CALENDRIER --- */
-        #viewMonth {
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 0.75rem;
-            box-shadow: var(--shadow-sm);
-            overflow-x: hidden;
-        }
-
-        .month-header {
-            display: flex;
-            padding: 0.5rem 0;
-            color: var(--text-secondary);
-            font-size: 0.65rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 8px;
-        }
-
-        .month-row {
-            display: flex;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.75rem;
-            font-weight: 500;
-            align-items: center;
-        }
-
-        .month-row:last-child {
-            border-bottom: none;
-        }
-
-        .month-row.friday-highlight {
-            background: var(--accent-bg);
-            border-radius: 8px;
-            border-bottom: none;
-            margin: 4px 0;
-            padding: 10px 0; 
-        }
-
-        /* Colonnes & Séparateurs */
-        .col { 
-            flex: 1; 
-            text-align: center;
-            font-variant-numeric: tabular-nums;
-            color: var(--text-secondary);
-            border-right: 1px solid rgba(128, 128, 128, 0.15); /* Séparateur discret */
-            padding: 0 2px;
-        }
-
-        .col:last-child {
-            border-right: none;
-        }
-
-        .col-date { 
-            width: 26px; 
-            flex: 0 0 auto; 
-            text-align: center;
-            font-weight: 700; 
-            color: var(--text-primary);
-            border-right: 1px solid rgba(128, 128, 128, 0.3); /* Séparateur plus marqué pour la date */
-        }
-
-        .col-day { 
-            width: 32px; 
-            flex: 0 0 auto; 
-            text-align: center;
-            font-weight: 600; 
-            color: var(--accent-color);
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            border-right: 1px solid rgba(128, 128, 128, 0.3);
-        }
-
-        .month-row.friday-highlight .col {
-            color: var(--text-primary);
-        }
-
-        /* --- UTILITAIRES --- */
-        .hidden { display: none !important; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate {
-            animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        }
-    </style>
-</head>
-<body>
-
-<div class="app-container">
-    <header>
-        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
-        <h1>Horaires des Prières</h1>
-        <p id="locationDisplay">📍 Position en cours...</p>
-        <div class="search-area">
-            <input id="cityInput" placeholder="Rechercher une ville..." type="text">
-            <button class="btn-search" onclick="searchCity()">Go</button>
-        </div>
-    </header>
-
-    <div class="tabs">
-        <button id="btnToday" class="tab-btn active" onclick="switchTab('today')">Aujourd'hui</button>
-        <button id="btnMonth" class="tab-btn" onclick="switchTab('month')">Calendrier</button>
-    </div>
-
-    <div id="viewToday" class="animate">
-        <div class="next-prayer-card">
-            <div class="next-prayer-label">Prochaine Prière</div>
-            <div id="nextName" class="next-prayer-name">Chargement...</div>
-            <div id="nextTime" class="next-prayer-time">--:--</div>
-            <div id="timer" class="countdown">Recherche de votre position...</div>
-        </div>
-
-        <div class="prayer-grid" id="prayerList"></div>
-    </div>
-
-    <div id="viewMonth" class="hidden animate">
-        <div class="month-header">
-            <div class="col-date">#</div>
-            <div class="col-day">J</div>
-            <div class="col">Fajr</div>
-            <div class="col">Cho</div>
-            <div class="col">Dhu</div>
-            <div class="col">Asr</div>
-            <div class="col">Mag</div>
-            <div class="col">Ish</div>
-        </div>
-        <div id="monthTable"></div>
-    </div>
-</div>
-
-<script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('SW prêt'))
-                .catch(err => console.log('Erreur SW', err));
-        });
+    // Fonction helper pour calculer le milieu de la nuit (Maghrib -> Fajr / 2)
+    function calculateIslamicMidnight(maghribStr, fajrStr) {
+        const [hM, mM] = maghribStr.split(':').map(Number);
+        const [hF, mF] = fajrStr.split(':').map(Number);
+        let magMin = hM * 60 + mM;
+        let fajMin = hF * 60 + mF;
+        if (fajMin < magMin) fajMin += 1440; // Nuit à cheval sur deux jours
+        const halfNight = (fajMin - magMin) / 2;
+        const midnightTotal = (magMin + halfNight) % 1440;
+        const h = Math.floor(midnightTotal / 60);
+        const m = Math.round(midnightTotal % 60);
+        return h.toString().padStart(2, '0') + ":" + m.toString().padStart(2, '0');
     }
 
-    let lat, lon;
-    const method = 3; 
-    let currentPrayers = [];
-    let timerInterval = null;
-
-    function toggleTheme() {
-        const body = document.body;
-        const btn = document.getElementById('themeToggle');
-        body.classList.toggle('light-mode');
-        const isLight = body.classList.contains('light-mode');
-        btn.innerText = isLight ? "☀️" : "🌙";
-        localStorage.setItem('theme', isLight ? 'light' : 'dark');
-    }
-
-    function applySavedTheme() {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'light') {
-            document.body.classList.add('light-mode');
-            document.getElementById('themeToggle').innerText = "☀️";
-        }
-    }
-
-    window.onload = () => {
-        applySavedTheme();
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(pos => {
-                lat = pos.coords.latitude;
-                lon = pos.coords.longitude;
-                updateLocationText("Ma position actuelle");
-                loadData();
-            }, () => {
-                lat = 48.8566; lon = 2.3522; 
-                updateLocationText("Paris (Défaut)");
-                loadData();
-            });
-        }
-    };
-
-    function updateLocationText(text) {
-        document.getElementById('locationDisplay').innerText = "📍 " + text;
-    }
-
-    async function searchCity() {
-        const city = document.getElementById('cityInput').value;
-        if(!city) return;
-        try {
-            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${city}`);
-            const data = await response.json();
-            if(data.length > 0) {
-                lat = data[0].lat;
-                lon = data[0].lon;
-                updateLocationText(data[0].display_name);
-                loadData();
-            }
-        } catch (e) {
-            console.error("Erreur recherche ville");
-        }
-    }
-
-    function switchTab(view) {
-        if(view === 'today') {
-            document.getElementById('viewToday').classList.remove('hidden');
-            document.getElementById('viewMonth').classList.add('hidden');
-            document.getElementById('btnToday').classList.add('active');
-            document.getElementById('btnMonth').classList.remove('active');
-        } else {
-            document.getElementById('viewToday').classList.add('hidden');
-            document.getElementById('viewMonth').classList.remove('hidden');
-            document.getElementById('btnToday').classList.remove('active');
-            document.getElementById('btnMonth').classList.add('active');
-        }
-    }
-
-    async function loadData() {
-        const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=${method}`);
-        const json = await res.json();
-        const t = json.data.timings;
-        
-        currentPrayers = [
-            {n: "Fajr", t: t.Fajr, type: "main"},
-            {n: "Chourouq", t: t.Sunrise, type: "extra"},
-            {n: "Dhuhr", t: t.Dhuhr, type: "main"},
-            {n: "Asr", t: t.Asr, type: "main"},
-            {n: "Maghrib", t: t.Maghrib, type: "main"},
-            {n: "Isha", t: t.Isha, type: "main"},
-            {n: "Minuit", t: t.Midnight, type: "extra"}
-        ];
-
-        displayPrayers(currentPrayers);
-        startTimer();
-        loadMonthData();
-    }
-
-    function displayPrayers(prayers) {
-        const container = document.getElementById('prayerList');
-        container.innerHTML = "";
-        prayers.forEach(p => {
-            const isExtra = p.type === "extra" ? "extra" : "";
-            container.innerHTML += `
-                <div class="prayer-row ${isExtra}">
-                    <span class="prayer-name">${p.n}</span>
-                    <span class="prayer-time">${p.t}</span>
-                </div>
-            `;
-        });
-    }
-
-    function startTimer() {
-        if(timerInterval) clearInterval(timerInterval);
-        updateCountdown();
-        timerInterval = setInterval(updateCountdown, 60000);
-    }
-
-    function updateCountdown() {
-        if(currentPrayers.length === 0) return;
-        const mainPrayers = currentPrayers.filter(p => p.type === "main");
-        const now = new Date();
-        let next = null;
-        for (let p of mainPrayers) {
-            const [h, m] = p.t.split(':');
-            const pDate = new Date();
-            pDate.setHours(h, m, 0);
-            if (pDate > now) {
-                next = { ...p, date: pDate };
-                break;
-            }
-        }
-        if (!next) {
-            next = { ...mainPrayers[0], date: new Date(new Date().getTime() + 24*60*60*1000) };
-            const [h, m] = mainPrayers[0].t.split(':');
-            next.date.setHours(h, m, 0);
-        }
-        document.getElementById('nextName').innerText = next.n;
-        document.getElementById('nextTime').innerText = next.t;
-        const diff = next.date - now;
-        const hh = Math.floor(diff / 1000 / 60 / 60);
-        const mm = Math.floor((diff / 1000 / 60) % 60);
-        let timeStr = "";
-        if(hh > 0) timeStr += hh + "h ";
-        timeStr += mm + "m";
-        document.getElementById('timer').innerText = `dans ${timeStr}`;
-        const rows = document.querySelectorAll('.prayer-row');
-        rows.forEach(row => {
-            const name = row.querySelector('.prayer-name').innerText;
-            if(name === next.n) row.classList.add('active');
-            else row.classList.remove('active');
-        });
-    }
-
-    async function loadMonthData() {
-        const d = new Date();
-        const res = await fetch(`https://api.aladhan.com/v1/calendar?latitude=${lat}&longitude=${lon}&method=${method}&month=${d.getMonth()+1}&year=${d.getFullYear()}`);
-        const json = await res.json();
-        
-        const daysFr = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
-        
-        let html = "";
-        json.data.forEach(day => {
-            const f = day.timings.Fajr.split(' ')[0];
-            const c = day.timings.Sunrise.split(' ')[0];
-            const dhu = day.timings.Dhuhr.split(' ')[0];
-            const a = day.timings.Asr.split(' ')[0];
-            const m = day.timings.Maghrib.split(' ')[0];
-            const i = day.timings.Isha.split(' ')[0];
-
-            const dateObj = new Date(day.date.readable);
-            const dayIndex = dateObj.getDay(); 
-            const dayName = daysFr[dayIndex];
-
+    async function loadData() {        const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=${method}`);        const json = await res.json();        const t = json.data.timings;
+        const customMidnight = calculateIslamicMidnight(t.Maghrib.split(' ')[0], t.Fajr.split(' ')[0]);
+                currentPrayers = [            {n: "Fajr", t: t.Fajr, type: "main"},            {n: "Chourouq", t: t.Sunrise, type: "extra"},            {n: "Dhuhr", t: t.Dhuhr, type: "main"},            {n: "Asr", t: t.Asr, type: "main"},            {n: "Maghrib", t: t.Maghrib, type: "main"},            {n: "Isha", t: t.Isha, type: "main"},            {n: "Minuit", t: customMidnight, type: "extra"}        ];
+        displayPrayers(currentPrayers);        startTimer();        loadMonthData();    }
+    function displayPrayers(prayers) {        const container = document.getElementById('prayerList');        container.innerHTML = "";        prayers.forEach(p => {            const isExtra = p.type === "extra" ? "extra" : "";            container.innerHTML += `                <div class="prayer-row ${isExtra}">                    <span class="prayer-name">${p.n}</span>                    <span class="prayer-time">${p.t}</span>                </div>            `;        });    }
+    function startTimer() {        if(timerInterval) clearInterval(timerInterval);        updateCountdown();        timerInterval = setInterval(updateCountdown, 60000);    }
+    function updateCountdown() {        if(currentPrayers.length === 0) return;        const mainPrayers = currentPrayers.filter(p => p.type === "main");        const now = new Date();        let next = null;        for (let p of mainPrayers) {            const [h, m] = p.t.split(':');            const pDate = new Date();            pDate.setHours(h, m, 0);            if (pDate > now) {                next = { ...p, date: pDate };                break;            }        }        if (!next) {            next = { ...mainPrayers[0], date: new Date(new Date().getTime() + 24*60*60*1000) };            const [h, m] = mainPrayers[0].t.split(':');            next.date.setHours(h, m, 0);        }        document.getElementById('nextName').innerText = next.n;        document.getElementById('nextTime').innerText = next.t;        const diff = next.date - now;        const hh = Math.floor(diff / 1000 / 60 / 60);        const mm = Math.floor((diff / 1000 / 60) % 60);        let timeStr = "";        if(hh > 0) timeStr += hh + "h ";        timeStr += mm + "m";        document.getElementById('timer').innerText = `dans ${timeStr}`;        const rows = document.querySelectorAll('.prayer-row');        rows.forEach(row => {            const name = row.querySelector('.prayer-name').innerText;            if(name === next.n) row.classList.add('active');            else row.classList.remove('active');        });    }
+    async function loadMonthData() {        const d = new Date();        const res = await fetch(`https://api.aladhan.com/v1/calendar?latitude=${lat}&longitude=${lon}&method=${method}&month=${d.getMonth()+1}&year=${d.getFullYear()}`);        const json = await res.json();                const daysFr = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];                let html = "";        json.data.forEach(day => {            const f = day.timings.Fajr.split(' ')[0];            const c = day.timings.Sunrise.split(' ')[0];            const dhu = day.timings.Dhuhr.split(' ')[0];            const a = day.timings.Asr.split(' ')[0];            const m = day.timings.Maghrib.split(' ')[0];            const i = day.timings.Isha.split(' ')[0];
+            const dateObj = new Date(day.date.readable);            const dayIndex = dateObj.getDay();             const dayName = daysFr[dayIndex];
             const isFridayClass = dayIndex === 5 ? "friday-highlight" : "";
-
-            html += `
-                <div class="month-row ${isFridayClass}">
-                    <div class="col-date">${day.date.gregorian.day}</div>
-                    <div class="col-day">${dayName}</div>
-                    <div class="col">${f}</div>
-                    <div class="col">${c}</div>
-                    <div class="col">${dhu}</div>
-                    <div class="col">${a}</div>
-                    <div class="col">${m}</div>
-                    <div class="col">${i}</div>
-                </div>
-            `;
-        });
-        document.getElementById('monthTable').innerHTML = html;
-    }
-</script>
-
-</body>
-</html>
+            html += `                <div class="month-row ${isFridayClass}">                    <div class="col-date">${day.date.gregorian.day}</div>                    <div class="col-day">${dayName}</div>                    <div class="col">${f}</div>                    <div class="col">${c}</div>                    <div class="col">${dhu}</div>                    <div class="col">${a}</div>                    <div class="col">${m}</div>                    <div class="col">${i}</div>                </div>            `;        });        document.getElementById('monthTable').innerHTML = html;    }</script>
+</body></html>
